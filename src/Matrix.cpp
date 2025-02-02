@@ -238,6 +238,7 @@ int Algebra::Matrix::rank() const noexcept {
     }
     return rankCounter;
 }
+
 //! OVERRIDES
 Algebra::Matrix Algebra::Matrix::operator+(const Matrix& other) {
     if ((rows != other.rows) || (cols != other.cols)) throw NonCompatibleMatrixes();

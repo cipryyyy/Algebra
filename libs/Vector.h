@@ -24,6 +24,7 @@ namespace Algebra {
         int getDimension();
         double mod();
         double scalar(Vector vec);
+        void normalize();
 
         double& operator[](int index);
         const double& operator[](int index) const;

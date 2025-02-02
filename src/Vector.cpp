@@ -65,6 +65,12 @@ double Algebra::Vector::scalar(Vector vec) {
     }
     return sum;
 }
+void Algebra::Vector::normalize() {
+    double m = mod();
+    for (int i = 0; i < space.getDimension(); i++) {
+        c[i] /= m;
+    }
+}
 
 //! Overrides
 double& Algebra::Vector::operator[](int index) {

@@ -18,7 +18,7 @@ Currently you must write everything manually inside of the main.cpp file, but a 
 4. Write where is the source code inside of the first form and where is the build folder inside of the second one.
 5. Hit *Configure* and *Generate*
 6. Open the terminal and navigate to the *build* folder
-7. Write `make`, this will create a file named `AlgebraProject`
+7. Write `make`, this will create a file named `calc`
 
 ### To-do list
 The calculator is kinda basic and it is only a terminal application, the GUI will be implemented when the calculator will be more complete.
