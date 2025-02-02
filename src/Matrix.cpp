@@ -1,16 +1,17 @@
 #include "Matrix.h"
+
 //! HELPER
-double pivotForGauss(Algebra::Matrix m, int col){
+int pivotForGauss(const Algebra::Matrix& m, int col) {
     if (col < 0 || col >= m.getCols()) throw Algebra::MatrixIndexOutOfBound();
-    int pos;
-    double val = DBL_MAX;
+    int pos = -1;  // Inizializziamo pos a -1 (non trovato)
+    double bestVal = DBL_MAX;
     for (int r = 0; r < m.getRows(); r++) {
-        if (m.get(r,col) < val && m.get(r,col) != 0) {
-            val = m.get(r,col);
+        double cell = m.get(r, col);
+        if (cell != 0 && std::abs(cell) < std::abs(bestVal)) {
+            bestVal = cell;
             pos = r;
         }
     }
-    if (val == DBL_MAX) return 0;
     return pos;
 }
 template <typename T>
@@ -21,14 +22,15 @@ T* ptrCl(T* src, int len) {
     }
     return std::move(copy);
 }
+
 //! PRIVATE
 void Algebra::Matrix::GaussStairForm() {
     for (int col = 0; col < cols; col++) {
         int pivot = pivotForGauss(*this, col);
-        if (pivot == 0) return;
+        if (pivot == -1) continue;
         for (int row = 0; row < rows; row++) {
             if (row == pivot) continue;
-            double ratio = data[row][col]/data[pivot][col];
+            double ratio = data[row][col] / data[pivot][col];
             lineSub(row, pivot, ratio);
         }
     }
@@ -94,13 +96,15 @@ Algebra::Matrix::Matrix(int rows, int cols, std::initializer_list<double> list) 
 Algebra::Matrix::Matrix(const Matrix& other) {
     rows = other.rows;
     cols = other.cols;
-    for (int i = 0; i < rows; i++) {
+    data = new double*[rows];
+    for (int i = 0; i < rows; ++i) {
         data[i] = new double[cols];
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < cols; ++j) {
             data[i][j] = other.data[i][j];
         }
     }
 }
+
 Algebra::Matrix::Matrix(Matrix&& other) {
     rows = other.rows;
     cols = other.cols;
@@ -120,7 +124,7 @@ Algebra::Matrix::Matrix(Matrix&& other) {
     delete[] other.data;
     other.data = nullptr;
 }
-Algebra::Matrix& Algebra::Matrix::operator= (const Matrix& other) {
+Algebra::Matrix& Algebra::Matrix::operator= (const Matrix& other) noexcept {
     if (this == &other) {
         return *this;
     }
@@ -142,7 +146,7 @@ Algebra::Matrix& Algebra::Matrix::operator= (const Matrix& other) {
 
     return *this;
 }
-Algebra::Matrix& Algebra::Matrix::operator= (Matrix&& other) {
+Algebra::Matrix& Algebra::Matrix::operator= (Matrix&& other) noexcept {
     if (this == &other) {
         return *this;
     }
@@ -154,14 +158,8 @@ Algebra::Matrix& Algebra::Matrix::operator= (Matrix&& other) {
 
     rows = other.rows;
     cols = other.cols;
-    data = new double*[rows];
-    for (int i = 0; i < rows; ++i) {
-        data[i] = new double[cols];
-        for (int j = 0; j < cols; ++j) {
-            data[i][j] = other.data[i][j];
-        }
-    }
-    
+    data = other.data;
+
     other.data = nullptr;
     other.rows = 0;
     other.cols = 0;
@@ -226,7 +224,7 @@ Algebra::Matrix Algebra::Matrix::transpose() const {
     }
     return T;
 }
-int Algebra::Matrix::rank() const noexcept {        //!Seg fault
+int Algebra::Matrix::rank() const noexcept {
     int rankCounter = 0;
     Algebra::Matrix RankMatrix = *this;
     RankMatrix.GaussStairForm();
@@ -234,7 +232,7 @@ int Algebra::Matrix::rank() const noexcept {        //!Seg fault
         for (int c = 0; c < cols; c++){
             if (RankMatrix.get(r,c) != 0) {
                 rankCounter++;
-                break;              //TODO check
+                break;
             }
         }
     }

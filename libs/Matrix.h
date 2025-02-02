@@ -18,6 +18,7 @@ namespace Algebra {
         Matrix subMatrix(int rCut, int cCut) const;
         void lineSwitch(int row1, int row2);
         void lineSub(int target, int sub, double scalar);
+        bool isNull();
 
     public:
         Matrix (int rows = 0, int cols = 0);
@@ -25,8 +26,8 @@ namespace Algebra {
 
         Matrix (const Matrix& other);
         Matrix (Matrix&& other);
-        Matrix& operator= (const Matrix& other);
-        Matrix& operator= (Matrix&& other);
+        Matrix& operator= (const Matrix& other) noexcept;
+        Matrix& operator= (Matrix&& other) noexcept;
         ~Matrix();
 
         int getCols() const {return cols;}
