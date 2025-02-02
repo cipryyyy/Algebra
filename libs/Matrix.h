@@ -4,6 +4,9 @@
 #include <initializer_list>
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <algorithm>
+#include <cfloat>
 #include "MatrixExcepts.h"
 
 namespace Algebra {
@@ -11,8 +14,10 @@ namespace Algebra {
     private:
         int rows, cols;
         double **data;
+        void GaussStairForm();
         Matrix subMatrix(int rCut, int cCut) const;
-        //TODO switch lines for Gauss
+        void lineSwitch(int row1, int row2);
+        void lineSub(int target, int sub, double scalar);
 
     public:
         Matrix (int rows = 0, int cols = 0);
@@ -33,15 +38,14 @@ namespace Algebra {
         double determinant() const;
         Matrix invert() const;
         Matrix transpose() const;
-        //TODO rank
+        int rank() const noexcept;
 
         Matrix operator+(const Matrix& other);
         Matrix operator-(const Matrix& other);
         Matrix operator*(const Matrix& other);
         Matrix operator*(double scalar) noexcept;
-
         bool operator==(const Matrix& other) const;
-        
+
         friend std::ostream& operator<<(std::ostream& os, const Matrix& M);
     };
 }

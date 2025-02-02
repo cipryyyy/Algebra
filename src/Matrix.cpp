@@ -1,6 +1,38 @@
 #include "Matrix.h"
-
+//! HELPER
+double pivotForGauss(Algebra::Matrix m, int col){
+    if (col < 0 || col >= m.getCols()) throw Algebra::MatrixIndexOutOfBound();
+    int pos;
+    double val = DBL_MAX;
+    for (int r = 0; r < m.getRows(); r++) {
+        if (m.get(r,col) < val && m.get(r,col) != 0) {
+            val = m.get(r,col);
+            pos = r;
+        }
+    }
+    if (val == DBL_MAX) return 0;
+    return pos;
+}
+template <typename T>
+T* ptrCl(T* src, int len) {
+    T* copy = new T[len];
+    for (int i = 0; i < len; i++) {
+        copy[i] = src[i];
+    }
+    return std::move(copy);
+}
 //! PRIVATE
+void Algebra::Matrix::GaussStairForm() {
+    for (int col = 0; col < cols; col++) {
+        int pivot = pivotForGauss(*this, col);
+        if (pivot == 0) return;
+        for (int row = 0; row < rows; row++) {
+            if (row == pivot) continue;
+            double ratio = data[row][col]/data[pivot][col];
+            lineSub(row, pivot, ratio);
+        }
+    }
+}
 Algebra::Matrix Algebra::Matrix::subMatrix(int rCut, int cCut) const {
     if (rCut < 0 || rCut >= rows) throw MatrixIndexOutOfBound();
     if (cCut < 0 || cCut >= cols) throw MatrixIndexOutOfBound();
@@ -23,6 +55,20 @@ Algebra::Matrix Algebra::Matrix::subMatrix(int rCut, int cCut) const {
         }
     }
     return sub;
+}
+void Algebra::Matrix::lineSwitch(int row1, int row2) {
+    if ((row1 < 0 || row1 >= rows) || (row2 < 0 || row2 >= rows)) throw MatrixIndexOutOfBound();
+    if (row1 == row2) return;
+    double *temp = data[row1];
+    data[row1] = data[row2];
+    data[row2] = temp;
+    temp = nullptr;
+}
+void Algebra::Matrix::lineSub(int target, int sub, double scalar) {
+    if ((target < 0 || target >= rows) || (sub < 0 || sub >= rows)) throw MatrixIndexOutOfBound();
+    for (int c = 0; c < cols; c++) {
+        data[target][c] -= data[sub][c] * scalar;
+    }
 }
 
 //! CONSTRUCTORS, MOVE, COPY AND DESTROYER
@@ -180,7 +226,20 @@ Algebra::Matrix Algebra::Matrix::transpose() const {
     }
     return T;
 }
-
+int Algebra::Matrix::rank() const noexcept {        //!Seg fault
+    int rankCounter = 0;
+    Algebra::Matrix RankMatrix = *this;
+    RankMatrix.GaussStairForm();
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++){
+            if (RankMatrix.get(r,c) != 0) {
+                rankCounter++;
+                break;              //TODO check
+            }
+        }
+    }
+    return rankCounter;
+}
 //! OVERRIDES
 Algebra::Matrix Algebra::Matrix::operator+(const Matrix& other) {
     if ((rows != other.rows) || (cols != other.cols)) throw NonCompatibleMatrixes();
