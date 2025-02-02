@@ -282,6 +282,20 @@ Algebra::Matrix Algebra::Matrix::operator*(double scalar) noexcept {
     }
     return Scalar;
 }
+Algebra::Vector Algebra::Matrix::operator*(Algebra::Vector vec) {
+    if (vec.getDimension() != cols) throw NonCompatibleVectors();
+    Algebra::Vector result(rows);
+    double temp = 0;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            temp += (data[r][c] * vec[c]);
+        }
+        result[r] = temp;
+        temp = 0;
+    }
+    return result;
+}
 bool Algebra::Matrix::operator==(const Matrix& other) const {
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {

@@ -5,7 +5,7 @@
 
 //HEADERS
 #include "Matrix.h"
-#include "Spaces.h"
+#include "Space.h"
 #include "Vector.h"
 
 //EXCEPTIONS

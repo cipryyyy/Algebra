@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cfloat>
 #include "MatrixExcepts.h"
+#include "Vector.h"
 
 namespace Algebra {
     class Matrix {
@@ -18,7 +19,6 @@ namespace Algebra {
         Matrix subMatrix(int rCut, int cCut) const;
         void lineSwitch(int row1, int row2);
         void lineSub(int target, int sub, double scalar);
-        bool isNull();
 
     public:
         Matrix (int rows = 0, int cols = 0);
@@ -45,6 +45,7 @@ namespace Algebra {
         Matrix operator-(const Matrix& other);
         Matrix operator*(const Matrix& other);
         Matrix operator*(double scalar) noexcept;
+        Algebra::Vector operator*(Algebra::Vector vec);
         bool operator==(const Matrix& other) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Matrix& M);
